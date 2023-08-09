@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Canvas Web Page</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            display: block;
+            background-color: #f2f2f2;
+            margin: 0 auto;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="500" height="500" style="border: 2px solid rgb(0, 34, 255);"></canvas>
+    <script>
+        var canvas=document.getElementById("myCanvas");
+        var c=canvas.getContext("2d");
+        c.fillStyle="green";
+        
+        c.fillRect(100,150,100,100);
+        c.beginPath();
+        c.moveTo(70,350);
+        c.lineTo(300,100);
+        c.StrokeStyle="red";
+        c.stroke();
+
+    </script>
+</body>
+</html>
