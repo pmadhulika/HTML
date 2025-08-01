@@ -109,20 +109,19 @@
                         <span class="status-badge status-${bus.status.toLowerCase().replace(' ', '-')}">${bus.status}</span>
                     </div>
                     <div class="bus-route">
-                        <i class="fas fa-map-marker-alt start-icon"></i>
-                        <span class="route-text">${bus.startingPoint} → ${bus.destination}</span>
-                        <i class="fas fa-map-marker-alt end-icon"></i>
+                        <i class="fas fa-route"></i>
+                        <span class="route-text">${bus.route}</span>
                     </div>
                     <div class="bus-timings">
                         <div class="timing">
-                            <i class="fas fa-clock"></i>
-                            <span class="timing-label">Arrival:</span>
-                            <span class="timing-value">${bus.arrivalTime}</span>
-                        </div>
-                        <div class="timing">
-                            <i class="fas fa-clock"></i>
+                            <i class="fas fa-arrow-up"></i>
                             <span class="timing-label">Departure:</span>
                             <span class="timing-value">${bus.departureTime}</span>
+                        </div>
+                        <div class="timing">
+                            <i class="fas fa-arrow-down"></i>
+                            <span class="timing-label">Arrival:</span>
+                            <span class="timing-value">${bus.arrivalTime}</span>
                         </div>
                     </div>
                 </div>

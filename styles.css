@@ -228,7 +228,7 @@ body {
 /* Bus Grid */
 .bus-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 20px;
 }
 
@@ -284,45 +284,42 @@ body {
 .status-on-time {
     background: linear-gradient(135deg, #48bb78, #38a169);
     color: white;
+    box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
 }
 
 .status-delayed {
-    background: linear-gradient(135deg, #ed8936, #dd6b20);
-    color: white;
+    background: linear-gradient(135deg, #ecc94b, #d69e2e);
+    color: #2d3748;
+    box-shadow: 0 2px 8px rgba(236, 201, 75, 0.3);
 }
 
 .status-left {
-    background: linear-gradient(135deg, #64748b, #4a5568);
+    background: linear-gradient(135deg, #fc8181, #e53e3e);
     color: white;
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
 }
 
 .bus-route {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     margin-bottom: 20px;
-    padding: 12px;
-    background: rgba(102, 126, 234, 0.05);
+    padding: 12px 16px;
+    background: rgba(102, 126, 234, 0.08);
     border-radius: 12px;
     border-left: 4px solid #667eea;
 }
 
-.start-icon {
-    color: #48bb78;
-    font-size: 1.1rem;
-}
-
-.end-icon {
-    color: #e53e3e;
-    font-size: 1.1rem;
+.bus-route i {
+    color: #667eea;
+    font-size: 1.2rem;
 }
 
 .route-text {
     font-weight: 600;
     color: #2d3748;
     flex: 1;
-    text-align: center;
-    font-size: 1rem;
+    font-size: 1.1rem;
 }
 
 .bus-timings {
@@ -342,9 +339,16 @@ body {
 }
 
 .timing i {
-    color: #8b5cf6;
     margin-bottom: 4px;
     font-size: 1.1rem;
+}
+
+.timing:first-child i {
+    color: #48bb78; /* Green for departure */
+}
+
+.timing:last-child i {
+    color: #667eea; /* Blue for arrival */
 }
 
 .timing-label {
@@ -435,19 +439,25 @@ body {
     color: #e53e3e;
 }
 
-/* Responsive Design */
+/* Enhanced Mobile Responsive Design */
 @media (max-width: 768px) {
     .container {
-        padding: 16px;
+        padding: 12px;
+    }
+    
+    .header {
+        padding: 20px 16px;
+        margin-bottom: 16px;
     }
     
     .header h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
     
     .header-content {
         flex-direction: column;
         text-align: center;
+        gap: 12px;
     }
     
     .bus-grid {
@@ -456,47 +466,99 @@ body {
     }
     
     .bus-card {
-        padding: 20px;
+        padding: 16px;
+        margin: 0;
+    }
+    
+    .bus-name {
+        font-size: 1.2rem;
     }
     
     .controls {
         justify-content: center;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    
+    .refresh-btn, .admin-btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
     }
     
     .bus-timings {
-        flex-direction: column;
         gap: 12px;
     }
     
+    .timing {
+        padding: 10px;
+    }
+    
+    .timing-value {
+        font-size: 1rem;
+    }
+    
     .notification {
-        right: 16px;
-        left: 16px;
+        right: 12px;
+        left: 12px;
         max-width: none;
+    }
+    
+    .admin-form {
+        padding: 16px;
+        margin-bottom: 16px;
     }
 }
 
 @media (max-width: 480px) {
+    .container {
+        padding: 8px;
+    }
+    
     .header {
-        padding: 20px;
+        padding: 16px 12px;
     }
     
     .header h1 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
     }
     
     .bus-header {
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
         text-align: center;
     }
     
-    .bus-route {
+    .bus-card {
+        padding: 12px;
+    }
+    
+    .bus-timings {
         flex-direction: column;
         gap: 8px;
+    }
+    
+    .timing {
+        padding: 8px;
         text-align: center;
+    }
+    
+    .refresh-btn, .admin-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+        width: 100%;
+    }
+    
+    .controls {
+        flex-direction: column;
+        width: 100%;
     }
     
     .route-text {
-        text-align: center;
+        font-size: 1rem;
+    }
+    
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
     }
 }

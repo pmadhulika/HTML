@@ -29,19 +29,15 @@ const busSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    startingPoint: {
-        type: String,
-        required: true
-    },
-    destination: {
-        type: String,
-        required: true
-    },
-    arrivalTime: {
+    route: {
         type: String,
         required: true
     },
     departureTime: {
+        type: String,
+        required: true
+    },
+    arrivalTime: {
         type: String,
         required: true
     },
@@ -124,9 +120,9 @@ app.post('/api/buses/update', async (req, res) => {
 // Create a new bus (for admin purposes)
 app.post('/api/buses', async (req, res) => {
     try {
-        const { busNumber, startingPoint, destination, arrivalTime, departureTime, status } = req.body;
+        const { busNumber, route, departureTime, arrivalTime, status } = req.body;
         
-        if (!busNumber || !startingPoint || !destination || !arrivalTime || !departureTime) {
+        if (!busNumber || !route || !departureTime || !arrivalTime) {
             return res.status(400).json({ error: 'All bus details are required' });
         }
         
@@ -137,10 +133,9 @@ app.post('/api/buses', async (req, res) => {
         
         const bus = new Bus({
             busNumber,
-            startingPoint,
-            destination,
-            arrivalTime,
+            route,
             departureTime,
+            arrivalTime,
             status: status || 'On Time'
         });
         
