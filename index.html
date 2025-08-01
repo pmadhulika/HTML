@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Bus Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-bus"></i> College Bus Tracker</h1>
+                <div class="last-updated">
+                    Last updated: <span id="lastUpdated">Loading...</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="controls">
+                <button class="refresh-btn" onclick="fetchBuses()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="admin-btn" onclick="toggleAdminForm()">
+                    <i class="fas fa-cog"></i> Admin Panel
+                </button>
+            </div>
+
+            <div class="admin-form" id="adminForm">
+                <div class="form-header">
+                    <h2><i class="fas fa-edit"></i> Update Bus Status</h2>
+                    <button class="close-btn" onclick="toggleAdminForm()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form id="updateForm" onsubmit="updateBusStatus(event)">
+                    <div class="form-group">
+                        <label for="busNumber">Bus Number/Name:</label>
+                        <select id="busNumber" required>
+                            <option value="">Select a bus...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newStatus">New Status:</label>
+                        <select id="newStatus" required>
+                            <option value="">Select status...</option>
+                            <option value="On Time">On Time</option>
+                            <option value="Delayed">Delayed</option>
+                            <option value="Left">Left</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i> Update Status
+                    </button>
+                </form>
+            </div>
+
+            <div class="bus-grid" id="busGrid">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading bus information...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let buses = [];
+        let refreshInterval;
+
+        // Fetch buses from the API
+        async function fetchBuses() {
+            try {
+                const response = await fetch('/api/buses');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch buses');
+                }
+                buses = await response.json();
+                displayBuses();
+                updateLastUpdatedTime();
+                populateBusDropdown();
+            } catch (error) {
+                console.error('Error fetching buses:', error);
+                showError('Failed to load bus information. Please try again.');
+            }
+        }
+
+        // Display buses in the grid
+        function displayBuses() {
+            const busGrid = document.getElementById('busGrid');
+            
+            if (buses.length === 0) {
+                busGrid.innerHTML = `
+                    <div class="no-data">
+                        <i class="fas fa-bus"></i>
+                        <p>No bus information available</p>
+                    </div>
+                `;
+                return;
+            }
+
+            busGrid.innerHTML = buses.map(bus => `
+                <div class="bus-card">
+                    <div class="bus-header">
+                        <h3 class="bus-name">${bus.busNumber}</h3>
+                        <span class="status-badge status-${bus.status.toLowerCase().replace(' ', '-')}">${bus.status}</span>
+                    </div>
+                    <div class="bus-route">
+                        <i class="fas fa-route"></i>
+                        <span class="route-text">${bus.route}</span>
+                    </div>
+                    <div class="bus-timings">
+                        <div class="timing">
+                            <i class="fas fa-arrow-up"></i>
+                            <span class="timing-label">Departure:</span>
+                            <span class="timing-value">${bus.departureTime}</span>
+                        </div>
+                        <div class="timing">
+                            <i class="fas fa-arrow-down"></i>
+                            <span class="timing-label">Arrival:</span>
+                            <span class="timing-value">${bus.arrivalTime}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Populate bus dropdown in admin form
+        function populateBusDropdown() {
+            const busSelect = document.getElementById('busNumber');
+            busSelect.innerHTML = '<option value="">Select a bus...</option>';
+            buses.forEach(bus => {
+                busSelect.innerHTML += `<option value="${bus.busNumber}">${bus.busNumber}</option>`;
+            });
+        }
+
+        // Update bus status
+        async function updateBusStatus(event) {
+            event.preventDefault();
+            
+            const busNumber = document.getElementById('busNumber').value;
+            const newStatus = document.getElementById('newStatus').value;
+            
+            if (!busNumber || !newStatus) {
+                showError('Please select both bus number and status');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/buses/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        busNumber: busNumber,
+                        status: newStatus
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to update bus status');
+                }
+
+                showSuccess('Bus status updated successfully!');
+                document.getElementById('updateForm').reset();
+                fetchBuses(); // Refresh the bus list
+                toggleAdminForm(); // Close the form
+            } catch (error) {
+                console.error('Error updating bus status:', error);
+                showError('Failed to update bus status. Please try again.');
+            }
+        }
+
+        // Toggle admin form visibility
+        function toggleAdminForm() {
+            const adminForm = document.getElementById('adminForm');
+            adminForm.classList.toggle('active');
+        }
+
+        // Update last updated time
+        function updateLastUpdatedTime() {
+            const now = new Date();
+            document.getElementById('lastUpdated').textContent = now.toLocaleTimeString();
+        }
+
+        // Show error message
+        function showError(message) {
+            showNotification(message, 'error');
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            showNotification(message, 'success');
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Start auto-refresh
+        function startAutoRefresh() {
+            refreshInterval = setInterval(fetchBuses, 5000); // Refresh every 5 seconds
+        }
+
+        // Stop auto-refresh
+        function stopAutoRefresh() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        }
+
+        // Handle page visibility change
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else {
+                startAutoRefresh();
+            }
+        });
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchBuses();
+            startAutoRefresh();
+        });
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            stopAutoRefresh();
+        });
+    </script>
+</body>
+</html>
